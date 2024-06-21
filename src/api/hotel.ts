@@ -25,16 +25,6 @@ export const fetchMyHotels = async (): Promise<HotelType[]> => {
     return response.json()
 }
 
-export const fetchMyHotelById = async (hotelId: string): Promise<HotelType> => {
-    const response = await fetch(`${API_BASE_URL}/api/hotels/${hotelId}`, {
-        credentials: 'include',
-    })
-    if (!response.ok) {
-        throw new Error('Error fetching hotels')
-    }
-    return response.json()
-}
-
 export const updateMyHotelById = async (hotelFormData: FormData) => {
     const response = await fetch(`${API_BASE_URL}/api/hotels/${hotelFormData.get('hotelId')}`, {
         method: 'PUT',
@@ -64,5 +54,13 @@ export const searchHotel = async (searchParams: SearchParams): Promise<HotelSear
     const response = await fetch(`${API_BASE_URL}/api/hotels/search?${queryParams}`)
 
     if (!response.ok) throw new Error('Error fetching hotels')
+    return response.json()
+}
+
+export const fetchHotelById = async (hotelId: string): Promise<HotelType> => {
+    const response = await fetch(`${API_BASE_URL}/api/hotels/${hotelId}`)
+    if (!response.ok) {
+        throw new Error('Error fetching Hotels')
+    }
     return response.json()
 }
