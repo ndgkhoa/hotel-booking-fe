@@ -3,12 +3,18 @@ import { useQuery } from 'react-query'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import * as apiClient from '../api/auth'
+import { loadStripe, Stripe } from '@stripe/stripe-js'
+
+const STRIPE_PUB_KEY = import.meta.env.VITE_STRIPE_PUB_KEY || ''
 
 type AppContextType = {
     isLoggedIn: boolean
+    stripePromise: Promise<Stripe | null>
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined)
+
+const stripePromise = loadStripe(STRIPE_PUB_KEY)
 
 export const useAppContext = () => {
     const context = useContext(AppContext)
@@ -23,7 +29,7 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
         retry: false,
     })
     return (
-        <AppContext.Provider value={{ isLoggedIn: !isError }}>
+        <AppContext.Provider value={{ isLoggedIn: !isError, stripePromise }}>
             {children}
             <ToastContainer />
         </AppContext.Provider>

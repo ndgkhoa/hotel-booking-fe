@@ -52,3 +52,22 @@ export type GuestInfoFormData = {
     adultCount: number
     childCount: number
 }
+
+export type PaymentIntentResponse = {
+    paymentIntentId: string
+    clientSecret: string
+    totalCost: number
+}
+
+export type BookingFormData = {
+    firstName: string
+    lastName: string
+    email: string
+    adultCount: number
+    childCount: number
+    checkIn: string
+    checkOut: string
+    hotelId: string
+    totalCost: number
+    paymentIntentId: string
+}
