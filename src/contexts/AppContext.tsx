@@ -1,5 +1,4 @@
-import { createContext, ReactNode, useContext } from 'react'
-import { useQuery } from 'react-query'
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import * as apiClient from '../api/auth'
@@ -9,6 +8,7 @@ const STRIPE_PUB_KEY = import.meta.env.VITE_STRIPE_PUB_KEY || ''
 
 type AppContextType = {
     isLoggedIn: boolean
+    setIsLoggedIn: (value: boolean) => void
     stripePromise: Promise<Stripe | null>
 }
 
@@ -25,11 +25,22 @@ export const useAppContext = () => {
 }
 
 export const AppContextProvider = ({ children }: { children: ReactNode }) => {
-    const { isError } = useQuery('validateToken', apiClient.validateToken, {
-        retry: false,
-    })
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+    useEffect(() => {
+        const verifyToken = async () => {
+            try {
+                await apiClient.verifyToken()
+                setIsLoggedIn(true)
+            } catch (error) {
+                setIsLoggedIn(false)
+            }
+        }
+        verifyToken()
+    }, [])
+
     return (
-        <AppContext.Provider value={{ isLoggedIn: !isError, stripePromise }}>
+        <AppContext.Provider value={{ isLoggedIn, setIsLoggedIn, stripePromise }}>
             {children}
             <ToastContainer />
         </AppContext.Provider>

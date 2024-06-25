@@ -1,17 +1,18 @@
 import { useForm } from 'react-hook-form'
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation } from 'react-query'
 import * as apiClient from '../api/auth'
 import { toast } from 'react-toastify'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useAppContext } from '../contexts/AppContext'
 
 export type SignInFormData = {
-    email: string
+    username: string
     password: String
 }
 
 const SignIn = () => {
     const navigate = useNavigate()
-    const queryClient = useQueryClient()
+    const { setIsLoggedIn } = useAppContext()
     const location = useLocation()
     const {
         register,
@@ -22,7 +23,7 @@ const SignIn = () => {
     const mutation = useMutation(apiClient.signIn, {
         onSuccess: async () => {
             toast.success('Sign in successful!')
-            await queryClient.invalidateQueries('validateToken')
+            setIsLoggedIn(true)
             navigate(location.state?.from?.pathname || '/')
         },
         onError: (error: Error) => {
@@ -37,19 +38,15 @@ const SignIn = () => {
         <form className="flex flex-col gap-5" onSubmit={onSubmit}>
             <h2 className="text-3xl font-bold">Sign In</h2>
             <label className="text-gray-700 text-sm font-bold flex-1">
-                Email
+                Username
                 <input
-                    type="email"
+                    type="text"
                     className="border rounded w-full py-1 px-2 font-normal"
-                    {...register('email', {
+                    {...register('username', {
                         required: 'This field is required',
-                        pattern: {
-                            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                            message: 'Invalid email address',
-                        },
                     })}
                 />
-                {errors.email && <span className="text-red-500">{errors.email.message}</span>}
+                {errors.username && <span className="text-red-500">{errors.username.message}</span>}
             </label>
             <label className="text-gray-700 text-sm font-bold flex-1">
                 Password

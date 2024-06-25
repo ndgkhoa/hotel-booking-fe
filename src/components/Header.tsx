@@ -4,6 +4,7 @@ import SignOutButton from './SignOutButton'
 
 const Header = () => {
     const { isLoggedIn } = useAppContext()
+
     return (
         <div className="bg-blue-800 py-6">
             <div className="container mx-auto flex justify-between">
@@ -42,4 +43,5 @@ const Header = () => {
         </div>
     )
 }
+
 export default Header

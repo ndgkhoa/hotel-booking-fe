@@ -7,7 +7,11 @@ import { useNavigate } from 'react-router-dom'
 export type RegisterFormData = {
     firstName: string
     lastName: string
+    birthday: Date
+    address: string
+    phone: string
     email: string
+    username: string
     password: string
     confirmPassword: string
 }
@@ -25,7 +29,7 @@ const Register = () => {
     const mutation = useMutation(apiClient.register, {
         onSuccess: async () => {
             toast.success('Registration success!')
-            await queryClient.invalidateQueries('validateToken')
+            await queryClient.invalidateQueries('verifyToken')
             navigate('/')
         },
         onError: (error: Error) => {
@@ -59,20 +63,74 @@ const Register = () => {
                     {errors.lastName && <span className="text-red-500">{errors.lastName.message}</span>}
                 </label>
             </div>
+            <div className="flex flex-col md:flex-row gap-5">
+                <label className="text-gray-700 text-sm font-bold flex-1">
+                    Email
+                    <input
+                        type="email"
+                        className="border rounded w-full py-1 px-2 font-normal"
+                        {...register('email', {
+                            required: 'This field is required',
+                            pattern: {
+                                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                                message: 'Invalid email address',
+                            },
+                        })}
+                    />
+                    {errors.email && <span className="text-red-500">{errors.email.message}</span>}
+                </label>
+                <label className="text-gray-700 text-sm font-bold flex-1">
+                    Birthday
+                    <input
+                        type="date"
+                        className="border rounded w-full py-1 px-2 font-normal"
+                        {...register('birthday', {
+                            required: 'This field is required',
+                        })}
+                    />
+                    {errors.birthday && <span className="text-red-500">{errors.birthday.message}</span>}
+                </label>
+                <label className="text-gray-700 text-sm font-bold flex-1">
+                    Address
+                    <input
+                        type="text"
+                        className="border rounded w-full py-1 px-2 font-normal"
+                        {...register('address', {
+                            required: 'This field is required',
+                            minLength: {
+                                value: 5,
+                                message: 'Address must be at least 5 characters long',
+                            },
+                        })}
+                    />
+                    {errors.address && <span className="text-red-500">{errors.address.message}</span>}
+                </label>
+                <label className="text-gray-700 text-sm font-bold flex-1">
+                    Phone
+                    <input
+                        type="tel"
+                        className="border rounded w-full py-1 px-2 font-normal"
+                        {...register('phone', {
+                            required: 'This field is required',
+                            pattern: {
+                                value: /^[0-9]{10}$/,
+                                message: 'Invalid phone number, must be 10 digits',
+                            },
+                        })}
+                    />
+                    {errors.phone && <span className="text-red-500">{errors.phone.message}</span>}
+                </label>
+            </div>
             <label className="text-gray-700 text-sm font-bold flex-1">
-                Email
+                Username
                 <input
-                    type="email"
+                    type="text"
                     className="border rounded w-full py-1 px-2 font-normal"
-                    {...register('email', {
+                    {...register('username', {
                         required: 'This field is required',
-                        pattern: {
-                            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                            message: 'Invalid email address',
-                        },
                     })}
                 />
-                {errors.email && <span className="text-red-500">{errors.email.message}</span>}
+                {errors.username && <span className="text-red-500">{errors.username.message}</span>}
             </label>
             <label className="text-gray-700 text-sm font-bold flex-1">
                 Password

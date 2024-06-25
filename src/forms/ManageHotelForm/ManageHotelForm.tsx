@@ -1,18 +1,18 @@
 import { FormProvider, useForm } from 'react-hook-form'
 import DetailsSection from './DetailsSection'
-import TypeSection from './TypeSection'
 import FacilitiesSection from './FacilitiesSection'
 import GuestsSection from './GuestsSection'
 import ImagesSection from './ImagesSection'
 import { HotelType } from '../../shared/types'
 import { useEffect } from 'react'
+import CategoriesSection from './CategoriesSection'
 
 export type HotelFormData = {
     name: string
     city: string
     country: string
     description: string
-    type: string
+    categories: string
     pricePerNight: number
     starRating: number
     facilities: string[]
@@ -44,7 +44,7 @@ const ManageHotelForm: React.FC<Props> = ({ onSave, isLoading, hotel }) => {
         formData.append('city', formDataJson.city)
         formData.append('country', formDataJson.country)
         formData.append('description', formDataJson.description)
-        formData.append('type', formDataJson.type)
+        formData.append('categories', formDataJson.categories)
         formData.append('pricePerNight', formDataJson.pricePerNight.toString())
         formData.append('starRating', formDataJson.starRating.toString())
         formData.append('adultCount', formDataJson.adultCount.toString())
@@ -70,7 +70,7 @@ const ManageHotelForm: React.FC<Props> = ({ onSave, isLoading, hotel }) => {
         <FormProvider {...formMethods}>
             <form className="flex flex-col gap-10" onSubmit={onSubmit}>
                 <DetailsSection />
-                <TypeSection />
+                <CategoriesSection />
                 <FacilitiesSection />
                 <GuestsSection />
                 <ImagesSection />

@@ -36,7 +36,7 @@ const MyHotels = () => {
                             </div>
                             <div className="border border-slate-300 rounded-sm p-3 flex items-center">
                                 <BsBuilding className="mr-1" />
-                                {hotel.type}
+                                {hotel.categories}
                             </div>
                             <div className="border border-slate-300 rounded-sm p-3 flex items-center">
                                 <BiMoney className="mr-1" />${hotel.pricePerNight} per Night
