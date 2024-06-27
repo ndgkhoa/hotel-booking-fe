@@ -1,6 +1,7 @@
 import { useQuery } from 'react-query'
 import * as userApiClient from '../api/user'
 import * as hotelApiClient from '../api/hotel'
+import * as bookingApiClient from '../api/booking'
 import BookingForm from '../forms/BookingForm/BookingForm'
 import { useSearchContext } from '../contexts/SearchContext'
 import { useParams } from 'react-router-dom'
@@ -24,7 +25,13 @@ const Booking = () => {
 
     const { data: paymentIntentData } = useQuery(
         'createPaymentIntent',
-        () => hotelApiClient.createPaymentIntent(hotelId as string, numberOfNights.toString()),
+        () =>
+            bookingApiClient.createPaymentIntent(
+                hotelId as string,
+                search.checkIn,
+                search.checkOut,
+                numberOfNights.toString(),
+            ),
         {
             enabled: !!hotelId && numberOfNights > 0,
         },

@@ -56,7 +56,7 @@ export type SearchParams = {
     childCount?: string
     page?: string
     facilities?: string[]
-    types?: string[]
+    categories?: string[]
     stars?: string[]
     maxPrice?: string
     sortOption?: string
@@ -76,13 +76,7 @@ export type PaymentIntentResponse = {
 }
 
 export type BookingFormData = {
-    firstName: string
-    lastName: string
-    email: string
-    adultCount: number
-    childCount: number
-    checkIn: string
-    checkOut: string
+    userId: string
     hotelId: string
     totalCost: number
     paymentIntentId: string
@@ -90,13 +84,19 @@ export type BookingFormData = {
 
 export type BookingType = {
     _id: string
-    userId: string
-    firstName: string
-    lastName: string
-    email: string
-    adultCount: number
-    childCount: number
     checkIn: Date
     checkOut: Date
+    status: string
     totalCost: number
+    userId: string
+    hotelId: string
+}
+
+export type BookingDetailFormData = {
+    totalCost: number
+    adultCount: number
+    childCount: number
+    hotelId: string
+    receiptId: string
+    bookingId: string
 }

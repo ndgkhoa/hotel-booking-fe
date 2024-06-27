@@ -2,10 +2,9 @@ import { useForm } from 'react-hook-form'
 import { BookingFormData, PaymentIntentResponse, UserType } from '../../shared/types'
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { StripeCardElement } from '@stripe/stripe-js'
-import { useSearchContext } from '../../contexts/SearchContext'
 import { useParams } from 'react-router-dom'
 import { useMutation } from 'react-query'
-import * as apiClient from '../../api/hotel'
+import * as apiClient from '../../api/booking'
 import { toast } from 'react-toastify'
 
 type Props = {
@@ -16,7 +15,6 @@ type Props = {
 const BookingForm = ({ currentUser, paymentIntent }: Props) => {
     const stripe = useStripe()
     const elements = useElements()
-    const search = useSearchContext()
     const { hotelId } = useParams()
 
     const { mutate: bookRoom, isLoading } = useMutation(apiClient.createRoomBooking, {
@@ -28,15 +26,16 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
         },
     })
 
-    const { handleSubmit, register } = useForm<BookingFormData>({
+    const { register } = useForm({
         defaultValues: {
             firstName: currentUser.firstName,
             lastName: currentUser.lastName,
             email: currentUser.email,
-            adultCount: search.adultCount,
-            childCount: search.childCount,
-            checkIn: search.checkIn.toISOString(),
-            checkOut: search.checkOut.toISOString(),
+        },
+    })
+    const { handleSubmit } = useForm<BookingFormData>({
+        defaultValues: {
+            userId: currentUser._id,
             hotelId: hotelId,
             totalCost: paymentIntent.totalCost,
             paymentIntentId: paymentIntent.paymentIntentId,
@@ -98,7 +97,7 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
             <div className="space-y-2">
                 <h2 className="text-xl font-semibold">Your Price Summary</h2>
                 <div className="bg-blue-200 p-4 rounded-md">
-                    <div className="font-semibold text-lg">Total Cost: ${paymentIntent.totalCost.toFixed(2)}</div>
+                    <div className="font-semibold text-lg">Total Cost: ${paymentIntent.totalCost}</div>
                     <div className="text-xs">Includes taxes and charges</div>
                 </div>
             </div>
