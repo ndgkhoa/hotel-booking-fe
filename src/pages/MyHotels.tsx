@@ -1,11 +1,12 @@
 import { useQuery } from 'react-query'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import * as apiClient from '../api/hotel'
 import { toast } from 'react-toastify'
 import { BsBuilding, BsMap } from 'react-icons/bs'
 import { BiHotel, BiMoney, BiStar } from 'react-icons/bi'
 
 const MyHotels = () => {
+    const navigate = useNavigate()
     const { data: hotelData } = useQuery('fetchMyHotels', apiClient.fetchMyHotels, {
         onError: () => {
             toast.error('')
@@ -18,9 +19,15 @@ const MyHotels = () => {
 
     return (
         <div className="space-y-5">
+            <button
+                onClick={() => navigate(-1)}
+                className="bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 px-4 rounded"
+            >
+                Back
+            </button>
             <span className=" flex justify-between">
                 <h1 className="text-3xl font-bold">My Hotels</h1>
-                <Link to="/add-hotel" className="flex bg-blue-600 text-white text-xl font-bold p-2 hover:bg-blue-500">
+                <Link to="/add-hotel" className="flex bg-blue-600 text-white text-xl font-medium rounded-lg p-2 hover:bg-blue-500">
                     Add Hotel
                 </Link>
             </span>
@@ -53,7 +60,7 @@ const MyHotels = () => {
                         <span className="flex justify-end">
                             <Link
                                 to={`/edit-hotel/${hotel._id}`}
-                                className="flex bg-blue-600 text-white text-xl font-bold p-2 hover:bg-blue-500"
+                                className="flex bg-blue-600 text-white text-xl rounded-lg font-medium p-2 hover:bg-blue-500"
                             >
                                 View Details
                             </Link>

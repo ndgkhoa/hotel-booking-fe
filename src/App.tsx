@@ -11,6 +11,9 @@ import Detail from './pages/Detail'
 import Booking from './pages/Booking'
 import MyBookings from './pages/MyBooking'
 import Home from './pages/Home'
+import Profile from './components/Profile'
+import FestivalPromotions from './pages/FestivalPromotions'
+import Coupons from './pages/Coupons'
 
 const App = () => {
     const { isLoggedIn } = useAppContext()
@@ -41,32 +44,45 @@ const App = () => {
                         </Layout>
                     }
                 />
+                <Route 
+                    path="/register" 
+                    element={
+                        <Register />
+                    }
+                 />
+                <Route 
+                    path="/sign-in" 
+                    element={
+                        <SignIn />
+                    }
+                />
                 <Route
-                    path="/register"
+                    path="/promotion"
                     element={
                         <Layout>
-                            <Register />
+                            <FestivalPromotions />
                         </Layout>
                     }
                 />
                 <Route
-                    path="/sign-in"
+                    path="/coupon"
                     element={
                         <Layout>
-                            <SignIn />
+                            <Coupons />
+                        </Layout>
+                    }
+                />
+                <Route
+                    path="/hotel/:hotelId/booking"
+                    element={
+                        <Layout>
+                            <Booking />
                         </Layout>
                     }
                 />
                 {isLoggedIn && (
                     <>
-                        <Route
-                            path="/hotel/:hotelId/booking"
-                            element={
-                                <Layout>
-                                    <Booking />
-                                </Layout>
-                            }
-                        />
+                        <Route path="/profile" element={<Profile />} />
                         <Route
                             path="/add-hotel"
                             element={

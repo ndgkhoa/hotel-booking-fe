@@ -1,6 +1,6 @@
 export type AccountType = {
     _id: string
-    email: string
+    username: string
     password: string
     role: string
 }
@@ -67,6 +67,8 @@ export type GuestInfoFormData = {
     checkOut: Date
     adultCount: number
     childCount: number
+    email: string
+    phone: string
 }
 
 export type PaymentIntentResponse = {
@@ -80,6 +82,10 @@ export type BookingFormData = {
     hotelId: string
     totalCost: number
     paymentIntentId: string
+    firstName: string
+    lastName: string
+    email: string
+    phone: string
 }
 
 export type BookingType = {
@@ -93,10 +99,11 @@ export type BookingType = {
 }
 
 export type BookingDetailFormData = {
-    totalCost: number
-    adultCount: number
-    childCount: number
-    hotelId: string
-    receiptId: string
-    bookingId: string
-}
+    totalCost: number;
+    adultCount: number;
+    childCount: number;
+    hotelId: string;
+    receiptId: string;
+    bookingId: string;
+};
+

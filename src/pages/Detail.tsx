@@ -1,11 +1,12 @@
 import { useQuery } from 'react-query'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import * as apiClient from '../api/hotel'
 import { AiFillStar } from 'react-icons/ai'
 import GuestInfoForm from '../forms/GuestInfoForm/GuestInfoForm'
 
 const Detail = () => {
     const { hotelId } = useParams()
+    const navigate = useNavigate()
 
     const { data: hotel } = useQuery('fetchMyHotelById', () => apiClient.fetchHotelById(hotelId as string), {
         enabled: !!hotelId,
@@ -15,6 +16,12 @@ const Detail = () => {
 
     return (
         <div className="space-y-6">
+            <button
+                onClick={() => navigate(-1)}
+                className="bg-blue-600 mt-10 hover:bg-blue-500 text-white font-medium py-2 px-4 rounded"
+            >
+                Back
+            </button>
             <div>
                 <span className="flex">
                     {Array.from({ length: hotel.starRating }).map((_, index) => (
