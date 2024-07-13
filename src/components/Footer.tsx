@@ -1,11 +1,16 @@
+import Logo from '../assets/logo.jpg'
+import { Link } from "react-router-dom"
+
 const Footer = () => {
     return (
-        <div className="bg-blue-800 py-10">
+        <div className="bg-white py-5 border-t-2 border-t-gray-400 shadow-lg">
             <div className="container mx-auto flex justify-between items-center">
-                <span className="text-3xl text-white font-bold tracking-tight">HotelVip</span>
-                <span className="text-white font-bold tracking-tight flex gap-4">
-                    <p className="cursor-pointer">Privacy Policy</p>
-                    <p className="cursor-pointer">Terms of Service</p>
+                <Link to="/">
+                    <img src={Logo} alt="Logo" className="w-10 h-10 mr-2" />
+                </Link>
+                <span className="text-black font-bold tracking-tight flex gap-4">
+                    <p className="cursor-pointer hover:text-blue-600">Privacy Policy</p>
+                    <p className="cursor-pointer hover:text-blue-600">Terms of Service</p>
                 </span>
             </div>
         </div>

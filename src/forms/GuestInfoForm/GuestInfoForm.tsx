@@ -1,21 +1,27 @@
 import { useForm } from 'react-hook-form'
-import { GuestInfoFormData } from '../../shared/types'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { useSearchContext } from '../../contexts/SearchContext'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useGuestInfoContext } from '../../contexts/GuestInfoContext'
 import { useAppContext } from '../../contexts/AppContext'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { BookingFormType, GuestInfoFormData } from '../../shared/types'
+import { toast } from 'react-toastify'
+import { createRoomBooking } from '../../api/booking'
 
 type Props = {
     hotelId: string
     pricePerNight: number
 }
 
-const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
+const GuestInfoForm = ({ pricePerNight }: Props) => {
     const search = useSearchContext()
-    const { isLoggedIn } = useAppContext()
     const navigate = useNavigate()
-    const location = useLocation()
+    const { roomId } = useParams()
+    const { isLoggedIn } = useAppContext()
+    const { guestInfo, setGuestInfo } = useGuestInfoContext()
+
+
 
     const {
         watch,
@@ -29,6 +35,8 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
             checkOut: search.checkOut,
             adultCount: search.adultCount,
             childCount: search.childCount,
+            email: guestInfo.email,
+            phone: guestInfo.phone,
         },
     })
 
@@ -39,22 +47,45 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
     const maxDate = new Date()
     maxDate.setFullYear(maxDate.getFullYear() + 1)
 
-    const onSignInClick = (data: GuestInfoFormData) => {
-        search.saveSearchValues('', data.checkIn, data.checkOut, data.adultCount, data.childCount)
-        navigate('/sign-in', { state: { from: location } })
-    }
-
     const onSubmit = (data: GuestInfoFormData) => {
+        if (!isLoggedIn) {
+            setGuestInfo({ email: data.email, phone: data.phone })
+        }
+
+
         search.saveSearchValues('', data.checkIn, data.checkOut, data.adultCount, data.childCount)
-        navigate(`/hotel/${hotelId}/booking`)
+        const bookingData: BookingFormType = {
+            checkIn: data.checkIn,
+            checkOut: data.checkOut,
+            adultCount: data.adultCount,
+            childCount: data.childCount
+        }
+        try {
+            createRoomBooking(bookingData, roomId as string)
+            toast.success('Booking created successfully!')
+            navigate(`/my-bookings`)
+        } catch (error) {
+            toast.error(`Booking failed: ${error}`)
+            console.error('Error creating booking:', error)
+        }
     }
 
     return (
-        <div className="flex flex-col p-4 bg-blue-200 gap-4">
-            <h3 className="text-md font-bold">${pricePerNight}</h3>
-            <form onSubmit={isLoggedIn ? handleSubmit(onSubmit) : handleSubmit(onSignInClick)}>
+        <div className="flex flex-col p-4 bg-blue-200 gap-4 rounded-lg">
+            <div className="font-medium text-xl flex justify-center">
+                <h2>Rental Agreement</h2>
+            </div>
+            <form>
                 <div className="grid grid-cols-1 gap-4 items-center">
+                    <input
+                        type="text"
+                        id="pricePerNight"
+                        className="text-md font-bold p-2 w-full cursor-default bg-gray-200"
+                        value={`Price per night: $${pricePerNight}`}
+                        readOnly
+                    />
                     <div>
+                        <p className='font-bold'>From</p>
                         <DatePicker
                             selected={checkIn}
                             onChange={(date) => setValue('checkIn', date as Date)}
@@ -69,6 +100,7 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
                         />
                     </div>
                     <div>
+                        <p className='font-bold'>To</p>
                         <DatePicker
                             selected={checkOut}
                             onChange={(date) => setValue('checkOut', date as Date)}
@@ -83,7 +115,7 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
                         />
                     </div>
                     <div className="flex bg-white px-2 py-1 gap-2">
-                        <label className="flex items-center">
+                        <label className="flex items-center flex-1">
                             Adults:
                             <input
                                 className="w-full p-1 focus:outline-none font-bold"
@@ -94,13 +126,13 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
                                     required: 'This field is required',
                                     min: {
                                         value: 1,
-                                        message: 'There must be at least on adult',
+                                        message: 'There must be at least one adult',
                                     },
                                     valueAsNumber: true,
                                 })}
-                            ></input>
+                            />
                         </label>
-                        <label className="flex items-center">
+                        <label className="flex items-center flex-1">
                             Children:
                             <input
                                 className="w-full p-1 focus:outline-none font-bold"
@@ -110,21 +142,60 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
                                 {...register('childCount', {
                                     valueAsNumber: true,
                                 })}
-                            ></input>
+                            />
                         </label>
                         {errors.adultCount && (
                             <span className="text-red-500 font-semibold text-sm">{errors.adultCount.message}</span>
                         )}
                     </div>
-                    {isLoggedIn ? (
-                        <button className="bg-blue-600 text-white h-full p-2 font-bold hover:bg-blue-500 text-xl">
-                            Book Now
-                        </button>
-                    ) : (
-                        <button className="bg-blue-600 text-white h-full p-2 font-bold hover:bg-blue-500 text-xl">
-                            Sign in to Book
-                        </button>
+                    {!isLoggedIn && (
+                        <>
+                            <div className="flex bg-white px-2 py-1 gap-2">
+                                <label className="flex items-center w-full">
+                                    Email:
+                                    <input
+                                        className="w-full p-1 focus:outline-none font-bold"
+                                        type="email"
+                                        {...register('email', {
+                                            required: 'Email is required',
+                                            pattern: {
+                                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                                message: 'Invalid email address',
+                                            },
+                                        })}
+                                    />
+                                </label>
+                                {errors.email && (
+                                    <span className="text-red-500 font-semibold text-sm">{errors.email.message}</span>
+                                )}
+                            </div>
+                            <div className="flex bg-white px-2 py-1 gap-2">
+                                <label className="flex items-center w-full">
+                                    Phone:
+                                    <input
+                                        className="w-full p-1 focus:outline-none font-bold"
+                                        type="tel"
+                                        {...register('phone', {
+                                            required: 'Phone number is required',
+                                            pattern: {
+                                                value: /^[0-9]{10,15}$/,
+                                                message: 'Invalid phone number',
+                                            },
+                                        })}
+                                    />
+                                </label>
+                                {errors.phone && (
+                                    <span className="text-red-500 font-semibold text-sm">{errors.phone.message}</span>
+                                )}
+                            </div>
+                        </>
                     )}
+                    <button
+                        className="bg-blue-600 text-white h-full p-2 font-medium hover:bg-blue-500 text-xl rounded-lg"
+                        onClick={handleSubmit(onSubmit)}
+                    >
+                        Book Now
+                    </button>
                 </div>
             </form>
         </div>

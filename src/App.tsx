@@ -4,13 +4,20 @@ import Register from './pages/Register'
 import SignIn from './pages/SignIn'
 import AddHotel from './pages/AddHotel'
 import { useAppContext } from './contexts/AppContext'
-import MyHotels from './pages/MyHotels'
 import EditHotel from './pages/EditHotel'
 import Search from './pages/Search'
-import Detail from './pages/Detail'
-import Booking from './pages/Booking'
 import MyBookings from './pages/MyBooking'
 import Home from './pages/Home'
+import Profile from './components/Profile'
+import Coupons from './pages/Coupons'
+import Spring from './dropdown/Spring'
+import Summer from './dropdown/Summer'
+import Autumn_Fall from './dropdown/Autumn_Fall'
+import Winter from './dropdown/Winter'
+import Room from './pages/Room'
+import Hotel from './pages/Hotel'
+import Detail from './pages/DetailRoom'
+import Payments from './pages/Payments'
 
 const App = () => {
     const { isLoggedIn } = useAppContext()
@@ -34,39 +41,92 @@ const App = () => {
                     }
                 />
                 <Route
-                    path="/detail/:hotelId"
+                    path="/hotel"
+                    element={
+                        <Layout>
+                            <Hotel />
+                        </Layout>
+                    }
+                />
+                <Route
+                    path="/detail/:roomId"
                     element={
                         <Layout>
                             <Detail />
                         </Layout>
                     }
                 />
+                <Route 
+                    path="/register" 
+                    element={
+                        <Register />
+                    }
+                 />
+                <Route 
+                    path="/sign-in" 
+                    element={
+                        <SignIn />
+                    }
+                />
                 <Route
-                    path="/register"
+                    path="/spring"
                     element={
                         <Layout>
-                            <Register />
+                            <Spring />
                         </Layout>
                     }
                 />
                 <Route
-                    path="/sign-in"
+                    path="/summer"
                     element={
                         <Layout>
-                            <SignIn />
+                            <Summer />
+                        </Layout>
+                    }
+                />
+                <Route
+                    path="/autumn-fall"
+                    element={
+                        <Layout>
+                            <Autumn_Fall />
+                        </Layout>
+                    }
+                />
+                <Route
+                    path="/winter"
+                    element={
+                        <Layout>
+                            <Winter />
+                        </Layout>
+                    }
+                />
+                <Route
+                    path="/coupon"
+                    element={
+                        <Layout>
+                            <Coupons />
+                        </Layout>
+                    }
+                />
+                <Route
+                    path="/:bookingId/payments"
+                    element={
+                        <Layout>
+                            <Payments />
+                        </Layout>
+                    }
+                />
+                <Route
+                    path="/room/:hotelId"
+                    element={
+                        <Layout>
+                            <Room />
                         </Layout>
                     }
                 />
                 {isLoggedIn && (
                     <>
-                        <Route
-                            path="/hotel/:hotelId/booking"
-                            element={
-                                <Layout>
-                                    <Booking />
-                                </Layout>
-                            }
-                        />
+                        <Route path="/profile" element={<Profile />} />
                         <Route
                             path="/add-hotel"
                             element={
@@ -76,7 +136,7 @@ const App = () => {
                             }
                         />
                         <Route
-                            path="/my-bookings"
+                            path="/my-bookings/:userId"
                             element={
                                 <Layout>
                                     <MyBookings />
@@ -88,14 +148,6 @@ const App = () => {
                             element={
                                 <Layout>
                                     <EditHotel />
-                                </Layout>
-                            }
-                        />
-                        <Route
-                            path="/my-hotels"
-                            element={
-                                <Layout>
-                                    <MyHotels />
                                 </Layout>
                             }
                         />

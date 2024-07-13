@@ -19,7 +19,7 @@ const SearchResultCard = ({ hotel }: Props) => {
                             {Array.from({ length: hotel.starRating }).map((_, index) => (
                                 <AiFillStar key={index} className="fill-yellow-400" />
                             ))}
-                            <span className="ml-1 text-sm">{hotel.type}</span>
+                            <span className="ml-1 text-sm">{hotel.categories}</span>
                         </span>
                     </div>
                     <Link to={`/detail/${hotel._id}`} className="text-2xl font-bold cursor-pointer">
@@ -47,7 +47,7 @@ const SearchResultCard = ({ hotel }: Props) => {
                         <span className="font-bold">${hotel.pricePerNight} per Night</span>
                         <Link
                             to={`/detail/${hotel._id}`}
-                            className="bg-blue-600 text-white h-full p-2 font-bold text-xl max-w-fit hover:bg-blue-500"
+                            className="bg-blue-600 text-white h-full p-2 font-medium text-lg max-w-fit rounded-lg hover:bg-blue-500"
                         >
                             View More
                         </Link>

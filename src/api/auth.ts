@@ -19,13 +19,20 @@ export const register = async (formData: RegisterFormData) => {
 }
 
 export const verifyToken = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        throw new Error('Token not found');
+    }
     const response = await fetch(`${API_BASE_URL}/api/auth/verify-token`, {
         credentials: 'include',
-    })
+        headers: {
+            'Token': `Bearer ${token}`,
+        },
+    });
     if (!response.ok) {
-        throw new Error('Token invalid')
+        throw new Error('Token invalid');
     }
-    return response.json()
+    return response.json();
 }
 
 export const signIn = async (formData: SignInFormData) => {

@@ -27,9 +27,13 @@ export const SearchContextProvider = ({ children }: SearchContextProviderProps) 
     const [checkIn, setCheckIn] = useState<Date>(
         () => new Date(sessionStorage.getItem('checkIn') || new Date().toISOString()),
     )
-    const [checkOut, setCheckOut] = useState<Date>(
-        () => new Date(sessionStorage.getItem('checkOut') || new Date().toISOString()),
-    )
+    const [checkOut, setCheckOut] = useState<Date>(() => {
+        const currentDate = new Date();
+        const nextDay = new Date(currentDate);
+        nextDay.setDate(currentDate.getDate() + 1);
+        return new Date(sessionStorage.getItem('checkOut') || nextDay.toISOString());
+    });
+    
     const [adultCount, setAdultCount] = useState<number>(() => parseInt(sessionStorage.getItem('adultCount') || '1'))
     const [childCount, setChildCount] = useState<number>(() => parseInt(sessionStorage.getItem('childCount') || '0'))
     const [hotelId, setHotelId] = useState<string>(() => sessionStorage.getItem('hotelId') || '')
