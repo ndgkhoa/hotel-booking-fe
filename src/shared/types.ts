@@ -2,6 +2,12 @@ export type AccountType = {
     _id: string
     username: string
     password: string
+    birthday: string
+    address: string
+    phone: string
+    email: string
+    firstName: string
+    lastName: string
     role: string
 }
 
@@ -28,7 +34,7 @@ export type HotelType = {
     city: string
     country: string
     description: string
-    status: string
+    status: boolean
     categories: string
     adultCount: number
     childCount: number
@@ -37,6 +43,19 @@ export type HotelType = {
     starRating: number
     imageUrls: string[]
     lastUpdate: Date
+    pagination: number
+}
+
+export type RoomType = {
+    _id: string
+    hotelId: string
+    name: string
+    status: boolean
+    adultCount: number
+    childCount: number
+    facilities: string[]
+    pricePerNight: number
+    imageUrls: string[]
 }
 
 export type HotelSearchResponse = {
@@ -77,33 +96,38 @@ export type PaymentIntentResponse = {
     totalCost: number
 }
 
-export type BookingFormData = {
-    userId: string
-    hotelId: string
+export type BookingFormType = {
+    checkIn: Date
+    checkOut: Date
+    adultCount: number
+    childCount: number
+}
+
+export type PaymentFormData = {
+    coupon: string
     totalCost: number
-    paymentIntentId: string
-    firstName: string
-    lastName: string
-    email: string
-    phone: string
+    method: string
 }
 
 export type BookingType = {
     _id: string
     checkIn: Date
     checkOut: Date
-    status: string
+    date: Date
+    adultCount: number
+    childCount: number
+    status: boolean
     totalCost: number
     userId: string
-    hotelId: string
+    roomId: string
 }
-
-export type BookingDetailFormData = {
-    totalCost: number;
-    adultCount: number;
-    childCount: number;
-    hotelId: string;
-    receiptId: string;
-    bookingId: string;
-};
+export type BookingDetailType = {
+    _id: string
+    totalCost: number
+    adultCount: number
+    childCount: number
+    roomId: string
+    receiptId: string
+    bookingId: string
+}
 

@@ -12,12 +12,12 @@ import { BookingFormData, PaymentIntentResponse, UserType } from '../../shared/t
 
 type Props = {
     currentUser: UserType
-    paymentIntent: PaymentIntentResponse
+    // paymentIntent: PaymentIntentResponse
 }
 
-const BookingForm = ({ currentUser, paymentIntent }: Props) => {
-    const stripe = useStripe()
-    const elements = useElements()
+const BookingForm = ({ currentUser }: Props) => {
+    // const stripe = useStripe()
+    // const elements = useElements()
     const { hotelId } = useParams()
     const { guestInfo } = useGuestInfoContext()
     const { isLoggedIn } = useAppContext()
@@ -38,28 +38,30 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
             email: isLoggedIn ? currentUser.email : guestInfo.email,
             phone: isLoggedIn ? currentUser.phone : guestInfo.phone,
             hotelId: hotelId,
-            totalCost: paymentIntent.totalCost,
-            paymentIntentId: paymentIntent.paymentIntentId,
+            // totalCost: paymentIntent.totalCost,
+            // paymentIntentId: paymentIntent.paymentIntentId,
         },
     })
 
-    const onSubmit = async (formData: BookingFormData) => {
-        if (!stripe || !elements) {
-            return
-        }
-        const result = await stripe.confirmCardPayment(paymentIntent.clientSecret, {
-            payment_method: {
-                card: elements.getElement(CardElement) as StripeCardElement,
-            },
-        })
-        if (result.paymentIntent?.status === 'succeeded') {
-            bookRoom({ ...formData, paymentIntentId: result.paymentIntent.id })
-        }
-    }
+    // const onSubmit = async (formData: BookingFormData) => {
+    //     if (!stripe || !elements) {
+    //         return
+    //     }
+    //     const result = await stripe.confirmCardPayment(paymentIntent.clientSecret, {
+    //         payment_method: {
+    //             card: elements.getElement(CardElement) as StripeCardElement,
+    //         },
+    //     })
+    //     if (result.paymentIntent?.status === 'succeeded') {
+    //         bookRoom({ ...formData, paymentIntentId: result.paymentIntent.id })
+    //     }
+    // }
 
     return (
         <form
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={() => {
+
+            }}
             className="grid grid-cols-1 gap-5 rounded-lg border border-slate-300 p-5"
         >
             <span className="text-3xl font-bold">Confirm Your Details</span>
@@ -116,19 +118,19 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
             <div className="space-y-2">
                 <h2 className="text-xl font-semibold">Your Price Summary</h2>
                 <div className="bg-blue-200 p-4 rounded-md">
-                    <div className="font-semibold text-lg">Total Cost: ${paymentIntent.totalCost}</div>
+                    {/* <div className="font-semibold text-lg">Total Cost: ${paymentIntent.totalCost}</div> */}
                     <div className="text-xs">Includes taxes and charges</div>
                 </div>
             </div>
             <div className="space-y-2">
                 <h3 className="text-xl font-semibold">Payment Details</h3>
-                <CardElement id="payment-element" className="border rounded-md p-2 text-sm" />
+                {/* <CardElement id="payment-element" className="border rounded-md p-2 text-sm" /> */}
             </div>
             <div className="flex justify-center">
                 <button
                     type="submit"
                     className="bg-blue-500 text-white w-64 p-3 rounded-md hover:bg-blue-600 disabled:bg-slate-200 disabled:cursor-not-allowed"
-                    disabled={!stripe || !elements || isLoading}
+                    // disabled={!stripe || !elements || isLoading}
                 >
                     Confirm Booking
                 </button>

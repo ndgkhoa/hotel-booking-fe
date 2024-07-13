@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { fetchCurrentUser } from '../api/user';
-import { UserType } from '../shared/types';
+import { fetchCurrentUser, fetchAccountUser } from '../api/user';
+import { UserType, AccountType } from '../shared/types'; 
 import { useNavigate } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
@@ -9,9 +9,11 @@ const Profile = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState<UserType | null>(null);
     const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [account, setAccount] = useState<AccountType | null>(null); 
 
     useEffect(() => {
         fetchUserInformation();
+        fetchAccountData();
     }, []);
 
     const fetchUserInformation = async () => {
@@ -23,13 +25,30 @@ const Profile = () => {
         }
     };
 
+    const fetchAccountData = async () => {
+        try {
+            const accountData = await fetchAccountUser();
+            setAccount(accountData);
+        } catch (error) {
+            console.error('Error fetching account information:', error);
+        }
+    };
+
     const handleTogglePassword = () => {
         setShowPassword(prevState => !prevState);
     };
 
-    if (!user) {
+    if (!user || !account) {
         return <div>Loading...</div>;
     }
+
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); 
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
 
     return (
         <>
@@ -46,12 +65,12 @@ const Profile = () => {
                         </div>
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2">User Name:</label>
-                            <input type="text" name="userName" readOnly className="bg-gray-300 border border-gray-300 rounded-md px-3 py-2 w-full cursor-default" />
+                            <input type="text" name="username" defaultValue={account.username} readOnly className="bg-gray-300 border border-gray-300 rounded-md px-3 py-2 w-full cursor-default" />
                         </div>
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2">Password:</label>
                             <div className="relative">
-                                <input type={showPassword ? 'text' : 'password'} name="password" className="border border-gray-300 rounded-md px-3 py-2 w-full" />
+                                <input type={showPassword ? 'text' : 'password'} defaultValue={account.password} name="password" className="border border-gray-300 rounded-md px-3 py-2 w-full" />
                                 <button type="button" onClick={handleTogglePassword} className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 focus:outline-none">{showPassword ? 'Hide' : 'Show'}</button>
                             </div>
                         </div>
@@ -81,7 +100,7 @@ const Profile = () => {
                         </div>
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2">Birthday:</label>
-                            <input type="text" name="birthday" value={user.birthday} className="border border-gray-300 rounded-md px-3 py-2 w-full" />
+                            <input type="text" name="birthday" value={formatDate(user.birthday)} className="border border-gray-300 rounded-md px-3 py-2 w-full" />
                         </div>
                         <div className="flex justify-center">
                             <button className="border p-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium">Save Profile</button>

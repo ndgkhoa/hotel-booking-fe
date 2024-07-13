@@ -8,13 +8,15 @@ const Home = () => {
     if (isLoading) return <div>Loading...</div>
     if (error) return <div>Error loading hotels</div>
 
+    
+
     return (
         <div>
             <h2 className="text-3xl text-center font-medium mb-4">Most Popular Hotels</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 shadow-lg">
                 {hotels?.slice(0, 3).map((hotel) => (
                     <div key={hotel._id} className="border rounded p-4 shadow-md">
-                        <h3 className="text-xl text-center font-medium mb-2">{hotel.name}</h3>
+                        <h3 className="text-lg text-center font-medium mb-2">{hotel.name}</h3>
                         <img
                             src={hotel.imageUrls[0]}
                             alt={hotel.name}
@@ -22,10 +24,10 @@ const Home = () => {
                         />
                         <div className="flex justify-center">
                             <Link
-                                to={`/detail/${hotel._id}`}
+                                to={`/room/${hotel._id}`}
                                 className="block text-center text-white bg-blue-600 hover:bg-blue-500 font-medium w-32 p-2 rounded-lg "
                             >
-                                View Details
+                                View More
                             </Link>
                         </div>
                     </div>
@@ -45,10 +47,10 @@ const Home = () => {
                             />
                             <div className="flex justify-center">
                                 <Link
-                                    to={`/detail/${hotel._id}`}
+                                    to={`/room/${hotel._id}`}
                                     className="block text-center text-white bg-blue-600 hover:bg-blue-500 font-medium w-32 p-2 rounded-lg "
                                 >
-                                    View Details
+                                    View More
                                 </Link>
                             </div>
                         </div>

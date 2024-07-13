@@ -1,23 +1,27 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { useSearchContext } from '../../contexts/SearchContext';
-import { useNavigate } from 'react-router-dom';
-import { useGuestInfoContext } from '../../contexts/GuestInfoContext'; // Import useGuestInfoContext
-import { useAppContext } from '../../contexts/AppContext';
-import { GuestInfoFormData } from '../../shared/types';
+import { useForm } from 'react-hook-form'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import { useSearchContext } from '../../contexts/SearchContext'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useGuestInfoContext } from '../../contexts/GuestInfoContext'
+import { useAppContext } from '../../contexts/AppContext'
+import { BookingFormType, GuestInfoFormData } from '../../shared/types'
+import { toast } from 'react-toastify'
+import { createRoomBooking } from '../../api/booking'
 
 type Props = {
-    hotelId: string;
-    pricePerNight: number;
-};
+    hotelId: string
+    pricePerNight: number
+}
 
-const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
-    const search = useSearchContext();
-    const navigate = useNavigate();
-    const { isLoggedIn } = useAppContext();
-    const { guestInfo, setGuestInfo } = useGuestInfoContext(); 
+const GuestInfoForm = ({ pricePerNight }: Props) => {
+    const search = useSearchContext()
+    const navigate = useNavigate()
+    const { roomId } = useParams()
+    const { isLoggedIn } = useAppContext()
+    const { guestInfo, setGuestInfo } = useGuestInfoContext()
+
+
 
     const {
         watch,
@@ -31,41 +35,57 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
             checkOut: search.checkOut,
             adultCount: search.adultCount,
             childCount: search.childCount,
-            email: guestInfo.email, 
-            phone: guestInfo.phone, 
+            email: guestInfo.email,
+            phone: guestInfo.phone,
         },
-    });
+    })
 
-    const checkIn = watch('checkIn');
-    const checkOut = watch('checkOut');
+    const checkIn = watch('checkIn')
+    const checkOut = watch('checkOut')
 
-    const minDate = new Date();
-    const maxDate = new Date();
-    maxDate.setFullYear(maxDate.getFullYear() + 1);
+    const minDate = new Date()
+    const maxDate = new Date()
+    maxDate.setFullYear(maxDate.getFullYear() + 1)
 
     const onSubmit = (data: GuestInfoFormData) => {
         if (!isLoggedIn) {
-            setGuestInfo({ email: data.email, phone: data.phone });
+            setGuestInfo({ email: data.email, phone: data.phone })
         }
-        search.saveSearchValues('', data.checkIn, data.checkOut, data.adultCount, data.childCount);
-        navigate(`/hotel/${hotelId}/booking`);
-    };
+
+
+        search.saveSearchValues('', data.checkIn, data.checkOut, data.adultCount, data.childCount)
+        const bookingData: BookingFormType = {
+            checkIn: data.checkIn,
+            checkOut: data.checkOut,
+            adultCount: data.adultCount,
+            childCount: data.childCount
+        }
+        try {
+            createRoomBooking(bookingData, roomId as string)
+            toast.success('Booking created successfully!')
+            navigate(`/my-bookings`)
+        } catch (error) {
+            toast.error(`Booking failed: ${error}`)
+            console.error('Error creating booking:', error)
+        }
+    }
 
     return (
         <div className="flex flex-col p-4 bg-blue-200 gap-4 rounded-lg">
             <div className="font-medium text-xl flex justify-center">
                 <h2>Rental Agreement</h2>
             </div>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form>
                 <div className="grid grid-cols-1 gap-4 items-center">
                     <input
                         type="text"
                         id="pricePerNight"
                         className="text-md font-bold p-2 w-full cursor-default bg-gray-200"
-                        value={`$${pricePerNight}`}
+                        value={`Price per night: $${pricePerNight}`}
                         readOnly
                     />
                     <div>
+                        <p className='font-bold'>From</p>
                         <DatePicker
                             selected={checkIn}
                             onChange={(date) => setValue('checkIn', date as Date)}
@@ -80,6 +100,7 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
                         />
                     </div>
                     <div>
+                        <p className='font-bold'>To</p>
                         <DatePicker
                             selected={checkOut}
                             onChange={(date) => setValue('checkOut', date as Date)}
@@ -94,7 +115,7 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
                         />
                     </div>
                     <div className="flex bg-white px-2 py-1 gap-2">
-                        <label className="flex items-center">
+                        <label className="flex items-center flex-1">
                             Adults:
                             <input
                                 className="w-full p-1 focus:outline-none font-bold"
@@ -111,7 +132,7 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
                                 })}
                             />
                         </label>
-                        <label className="flex items-center">
+                        <label className="flex items-center flex-1">
                             Children:
                             <input
                                 className="w-full p-1 focus:outline-none font-bold"
@@ -169,13 +190,16 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
                             </div>
                         </>
                     )}
-                    <button className="bg-blue-600 text-white h-full p-2 font-medium hover:bg-blue-500 text-xl rounded-lg">
+                    <button
+                        className="bg-blue-600 text-white h-full p-2 font-medium hover:bg-blue-500 text-xl rounded-lg"
+                        onClick={handleSubmit(onSubmit)}
+                    >
                         Book Now
                     </button>
                 </div>
             </form>
         </div>
-    );
-};
+    )
+}
 
-export default GuestInfoForm;
+export default GuestInfoForm

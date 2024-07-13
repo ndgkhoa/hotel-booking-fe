@@ -22,10 +22,10 @@ const SignIn = () => {
         handleSubmit,
     } = useForm<SignInFormData>();
 
-
     const mutation = useMutation(apiClient.signIn, {
-        onSuccess: async () => {
+        onSuccess: async (data) => {
             toast.success('Sign in successful!');
+            localStorage.setItem('token', data.token); 
             setIsLoggedIn(true);
             navigate(location.state?.from?.pathname || '/');
         },
@@ -43,12 +43,10 @@ const SignIn = () => {
     };
 
     return (
-        <div
-            className="flex items-center justify-center min-h-screen bg-gradient-to-r from-sky-300 to-sky-200"
-        >
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-sky-300 to-sky-200">
             <div className="flex items-center justify-center w-full opacity-90">
                 <form
-                    className="bg-white p-8 rounded-lg shadow-lg max-w-md space-y-6 border-t-4 border-gray-500 "
+                    className="bg-white p-8 rounded-lg shadow-lg max-w-md space-y-6 border-t-4 border-gray-500"
                     onSubmit={onSubmit}
                 >
                     <button

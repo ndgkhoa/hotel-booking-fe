@@ -27,7 +27,7 @@ const SeachBar = () => {
     return (
         <form
             onSubmit={handleSubmit}
-            className="relative z-10 -mt-8 -mb-8 h-36 p-3 bg-gray-200 border-t-2 border-gray-500 rounded-xl shadow-lg grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 items-start gap-4"
+            className="relative z-10 -mt-2 -mb-8 p-3 bg-gray-200 border-t-2 border-gray-500 rounded-xl shadow-lg grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 items-start gap-4"
         >
             <div className="col-span-2 lg:col-span-1">
                 <div className="flex flex-row items-center bg-white p-2">
