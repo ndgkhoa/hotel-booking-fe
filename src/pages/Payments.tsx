@@ -5,8 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { fetchCurrentUser } from '../api/user'
 import { toast } from 'react-toastify'
 import { applyCouponCode } from '../api/coupon'
-import { CardElement } from '@stripe/react-stripe-js'
-
+import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
@@ -20,6 +19,9 @@ const Payments = () => {
     const [coupon, setCoupon] = useState<string>('')
     const [nights, setNights] = useState<number>(0)
     const { bookingId } = useParams<{ bookingId: string }>()
+
+    const stripe = useStripe()
+    const elements = useElements()
 
     useEffect(() => {
         fetchBookingData()
@@ -51,32 +53,84 @@ const Payments = () => {
     }
 
     const postPaymentData = async () => {
-        const token = localStorage.getItem('token')
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/receipts/${bookingId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Token: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    totalCost,
-                    method,
-                    coupon,
-                }),
-            })
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok')
+        if (method === 'Stripe' && stripe && elements) {
+            const cardElement = elements.getElement(CardElement)
+            if (!cardElement) {
+                toast.error('Card element not found')
+                return
             }
 
-            const data = await response.json()
-            toast.success('Payment successfully!')
-            navigate('/')
-            return data
-        } catch (error) {
-            console.error('Error posting payment data:', error)
-            throw error
+            const { token: stripeToken, error } = await stripe.createToken(cardElement)
+            if (error) {
+                toast.error('Error creating token: ' + error.message)
+                return
+            }
+
+            const stripeTokenId = stripeToken?.id
+
+            if (!stripeTokenId) {
+                toast.error('Token creation failed')
+                return
+            }
+
+            const authToken = localStorage.getItem('token')
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/receipts/${bookingId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Token: `Bearer ${authToken}`,
+                    },
+                    body: JSON.stringify({
+                        totalCost,
+                        method,
+                        coupon,
+                        paymentMethodId: stripeTokenId,
+                    }),
+                })
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok')
+                }
+
+                const data = await response.json()
+                toast.success('Payment successfully!')
+                navigate('/')
+                return data
+            } catch (error) {
+                console.error('Error posting payment data:', error)
+                toast.error('Error posting payment data')
+                throw error
+            }
+        } else {
+            const authToken = localStorage.getItem('token')
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/receipts/${bookingId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Token: `Bearer ${authToken}`,
+                    },
+                    body: JSON.stringify({
+                        totalCost,
+                        method,
+                        coupon,
+                    }),
+                })
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok')
+                }
+
+                const data = await response.json()
+                toast.success('Payment successfully!')
+                navigate('/')
+                return data
+            } catch (error) {
+                console.error('Error posting payment data:', error)
+                toast.error('Error posting payment data')
+                throw error
+            }
         }
     }
 
@@ -237,12 +291,15 @@ const Payments = () => {
                     </select>
                 </div>
                 {method === 'Stripe' && (
-                        <CardElement  />
+                    <div>
+                        <CardElement className="border p-2 rounded" />
+                    </div>
                 )}
                 <div className="flex justify-center mt-2">
                     <button
                         className="text-white bg-blue-600 hover:bg-blue-700 rounded-lg p-3 font-medium"
                         onClick={postPaymentData}
+                        disabled={!stripe || !elements}
                     >
                         Confirm Bookings
                     </button>

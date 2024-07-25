@@ -14,9 +14,11 @@ import Detail from './pages/DetailRoom'
 import Payments from './pages/Payments'
 import Promotions from './dropdown/Promotions'
 import Abouts from './pages/About'
+import { Elements } from '@stripe/react-stripe-js'
 
 const App = () => {
     const { isLoggedIn } = useAppContext()
+    const { stripePromise } = useAppContext()
     return (
         <Router>
             <Routes>
@@ -52,18 +54,8 @@ const App = () => {
                         </Layout>
                     }
                 />
-                <Route 
-                    path="/register" 
-                    element={
-                        <Register />
-                    }
-                 />
-                <Route 
-                    path="/sign-in" 
-                    element={
-                        <SignIn />
-                    }
-                />
+                <Route path="/register" element={<Register />} />
+                <Route path="/sign-in" element={<SignIn />} />
                 <Route
                     path="/promotions"
                     element={
@@ -83,9 +75,11 @@ const App = () => {
                 <Route
                     path="/:bookingId/payments"
                     element={
-                        <Layout>
-                            <Payments />
-                        </Layout>
+                        <Elements stripe={stripePromise}>
+                            <Layout>
+                                <Payments />
+                            </Layout>
+                        </Elements>
                     }
                 />
                 <Route
