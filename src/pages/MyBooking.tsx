@@ -1,27 +1,26 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import {  fetchMyBooking } from '../api/booking'
+import { fetchMyBooking } from '../api/booking'
 import { BookingType } from '../shared/types'
 import { BiMoney } from 'react-icons/bi'
 
 const MyBookings = () => {
     const navigate = useNavigate()
     const [booking, setBookings] = useState<BookingType[]>([])
-    const {userId} = useParams()
+    const { userId } = useParams()
 
     useEffect(() => {
-        const fetchMyBookingData = async () => {
-            try {
-                const bookingData = await fetchMyBooking()
-                console.log(bookingData)
-                setBookings(bookingData)
-            } catch (error) {
-                console.error('Error fetching my booking', error)
-            }
-        }
-
         fetchMyBookingData()
     }, [userId])
+
+    const fetchMyBookingData = async () => {
+        try {
+            const bookingData = await fetchMyBooking()
+            setBookings(bookingData)
+        } catch (error) {
+            console.error('Error fetching my booking', error)
+        }
+    }
 
     const formatDate = (dateString: Date) => {
         const date = new Date(dateString)
@@ -32,8 +31,8 @@ const MyBookings = () => {
     }
 
     const handlePayments = (bookingId: string) => {
-        navigate(`/${bookingId}/payments/`);
-      };
+        navigate(`/${bookingId}/payments/`)
+    }
 
     return (
         <div className="space-y-5">
@@ -57,15 +56,27 @@ const MyBookings = () => {
                         <div className="whitespace-pre-line">User ID: {booking.userId}</div>
                         <div className="whitespace-pre-line">Check-In: {formatDate(booking.checkIn)}</div>
                         <div className="whitespace-pre-line">Check-Out: {formatDate(booking.checkOut)}</div>
-                        <div className="whitespace-pre-line">Status: {booking.status}</div>
-                        <div className='flex justify-between items-center'>
-                            <div className="border border-slate-300 rounded-sm p-3 flex items-center w-1/5 font-medium">
+                        <div className="whitespace-pre-line flex">
+                            Status:{' '}
+                            {booking.status == false ? <p className="ml-2">Pending</p> : <p className="ml-2">Paid</p>}
+                        </div>
+                        <div className="flex justify-between items-center">
+                            <div className="border border-slate-300 rounded-lg p-3 flex items-center w-1/5 font-medium">
                                 <BiMoney className="mr-2 text-green-700" />
                                 Total Cost: ${booking.totalCost}
                             </div>
-                            <div className=''>
-                                <button className="text-white bg-blue-600 hover:bg-blue-700 font-medium p-2 rounded-lg mr-2" onClick={() => handlePayments(booking._id)}>Payments</button>
-                                <button className="text-white bg-red-600 hover:bg-red-700 font-medium p-2 rounded-lg">Cancel</button>
+                            <div className="">
+                                {booking.status === false && (
+                                    <button
+                                        className="text-white bg-blue-600 hover:bg-blue-700 font-medium p-2 rounded-lg mr-2"
+                                        onClick={() => handlePayments(booking._id)}
+                                    >
+                                        Payments
+                                    </button>
+                                )}
+                                <button className="text-white bg-red-600 hover:bg-red-700 font-medium p-2 rounded-lg">
+                                    Cancel
+                                </button>
                             </div>
                         </div>
                     </div>

@@ -1,17 +1,21 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../contexts/AppContext';
-import SignOutButton from './SignOutButton';
 import Logo from '../assets/logo.jpg';
+import * as apiClient from '../api/auth';
 import { useEffect, useState } from 'react';
 import { fetchCurrentUser } from '../api/user';
-import { FaCaretDown } from 'react-icons/fa'; 
+import { FaAngleDown, FaBars, FaUserCircle } from 'react-icons/fa';
+import { useMutation, useQueryClient } from 'react-query';
+import { toast } from 'react-toastify';
 
 const Header = () => {
+    const navigate = useNavigate();
     const [userId, setUserId] = useState('');
     const { isLoggedIn, setIsLoggedIn } = useAppContext();
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false); 
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
 
     useEffect(() => {
         if (isLoggedIn) {
@@ -24,19 +28,28 @@ const Header = () => {
             const userData = await fetchCurrentUser();
             setFirstName(userData.firstName);
             setLastName(userData.lastName);
-            setUserId(userData._id)
+            setUserId(userData._id);
         } catch (error) {
             console.error('Error fetching user information:', error);
             setIsLoggedIn(false);
         }
     };
 
-    const toggleDropdown = () => {
-        setIsDropdownOpen(!isDropdownOpen);
-    };
+    const queryClient = useQueryClient();
+    const mutation = useMutation(apiClient.signOut, {
+        onSuccess: async () => {
+            setIsLoggedIn(false);
+            await queryClient.invalidateQueries('verifyToken');
+            toast.success('Signed out!');
+            navigate("/");
+        },
+        onError: (error: Error) => {
+            toast.error(error.message);
+        },
+    });
 
-    const handleDropdownItemClick = () => {
-        setIsDropdownOpen(false);
+    const handleClick = () => {
+        mutation.mutate();
     };
 
     return (
@@ -45,61 +58,77 @@ const Header = () => {
                 <Link to="/">
                     <img src={Logo} alt="Logo" className="w-10 h-10 mr-2" />
                 </Link>
-                <div className="flex-grow flex space-x-4 justify-center">
+                <button
+                    className="block lg:hidden p-2 rounded-md text-gray-600 focus:outline-none focus:bg-gray-200"
+                    onClick={() => setMenuOpen(!menuOpen)}
+                >
+                    <FaBars className="w-6 h-6" />
+                </button>
+                <div
+                    className={`${
+                        menuOpen ? 'block' : 'hidden'
+                    } lg:flex flex-col lg:flex-row lg:space-x-4 items-center lg:justify-center w-full lg:w-auto flex`}
+                >
+                    
                     <span className="text-xl text-black font-medium tracking-tight hover:text-blue-800">
                         <Link to="/">Home</Link>
                     </span>
                     <span className="text-xl text-black font-medium tracking-tight hover:text-blue-800">
                         <Link to="/hotel">Hotel</Link>
                     </span>
-                    <div className="relative">
-                        <span
-                            className="text-xl text-black font-medium tracking-tight hover:text-blue-800 flex items-center cursor-pointer"
-                            onClick={toggleDropdown}
-                        >
-                            Festival promotions <FaCaretDown className="ml-1" />
-                        </span>
-                        {isDropdownOpen && (
-                            <div className="absolute bg-white border border-black shadow-lg rounded mt-3 w-48">
-                                <Link to="/spring" className="block px-4 py-2 text-black hover:bg-gray-200 font-medium" onClick={handleDropdownItemClick}>Spring</Link>
-                                <Link to="/summer" className="block px-4 py-2 text-black hover:bg-gray-200 font-medium" onClick={handleDropdownItemClick}>Summer</Link>
-                                <Link to="/autumn-fall" className="block px-4 py-2 text-black hover:bg-gray-200 font-medium" onClick={handleDropdownItemClick}>Autumn/Fall</Link>
-                                <Link to="/winter" className="block px-4 py-2 text-black hover:bg-gray-200 font-medium" onClick={handleDropdownItemClick}>Winter</Link>
-                            </div>
-                        )}
-                    </div>
                     <span className="text-xl text-black font-medium tracking-tight hover:text-blue-800">
-                        <Link to="/coupon">Coupons</Link>
+                        <Link to="/promotions">Festival promotions</Link>
                     </span>
-                </div>
-                <span className="flex space-x-4">
-                    {isLoggedIn ? (
-                        <>
-                            <Link
-                                className="flex items-center text-black px-3 font-medium hover:text-blue-800"
-                                to={`/my-bookings/${userId}`}
-                            >
-                                My Bookings
-                            </Link>
-                            <Link to="/profile" className="text-sm text-black font-medium mt-3 cursor-pointer hover:underline">
-                                Hello, {firstName} {lastName}
-                            </Link>
-                            <SignOutButton />
-                        </>
-                    ) : (
-                        <>
+                    <span className="text-xl text-black font-medium tracking-tight hover:text-blue-800">
+                        <Link to="/about">About Us</Link>
+                    </span>
+                    <div className="relative mt-2 lg:mt-0">
+                        {isLoggedIn ? (
+                            <>
+                                <button
+                                    className="flex items-center text-black px-3 font-medium hover:text-blue-800"
+                                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                                >
+                                    <FaUserCircle className="w-8 h-8 mr-2" />
+                                    <span>Hello, {firstName} {lastName}</span>
+                                    <FaAngleDown className='ml-1'/>
+                                </button>
+                                {dropdownOpen && (
+                                    <div className="absolute right-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg w-48 z-10">
+                                        <Link
+                                            to={`/my-bookings/${userId}`}
+                                            className="block px-4 py-2 text-black hover:bg-gray-200"
+                                        >
+                                            My Bookings
+                                        </Link>
+                                        <Link
+                                            to="/profile"
+                                            className="block px-4 py-2 text-black hover:bg-gray-200"
+                                        >
+                                            Profile
+                                        </Link>
+                                        <button
+                                            onClick={handleClick}
+                                            className="block w-full px-4 py-2 text-black hover:bg-gray-200 text-left"
+                                        >
+                                            Sign Out
+                                        </button>
+                                    </div>
+                                )}
+                            </>
+                        ) : (
                             <Link
                                 to="/sign-in"
                                 className="flex bg-white items-center text-gray-600 px-3 py-2 font-bold hover:bg-gray-300 rounded-lg border-2 border-black"
                             >
                                 Sign in
                             </Link>
-                        </>
-                    )}
-                </span>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );
-};
+}
 
 export default Header;

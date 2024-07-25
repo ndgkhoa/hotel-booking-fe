@@ -17,6 +17,7 @@ export const fetchCurrentUser = async (): Promise<UserType> => {
 }
 
 
+
 export const fetchAccountUser = async (): Promise<AccountType> => {
     const token = localStorage.getItem('token');
     try {

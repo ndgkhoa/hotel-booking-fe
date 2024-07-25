@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { fetchCurrentUser, fetchAccountUser } from '../api/user';
+import { fetchCurrentUser, fetchAccountUser, } from '../api/user';
 import { UserType, AccountType } from '../shared/types'; 
 import { useNavigate } from 'react-router-dom';
 import Header from './Header';
@@ -53,7 +53,7 @@ const Profile = () => {
     return (
         <>
             <Header />
-            <div className="min-h-screen bg-gradient-to-r from-gray-200 to-sky-200">
+            <div className="min-h-screen">
                 <div className="container mx-auto">
                     <button onClick={() => navigate(-1)} className="bg-blue-600 mt-10 hover:bg-blue-500 text-white font-medium py-2 px-4 rounded">Back</button>
                     <div className="bg-white p-4 shadow-md shadow-gray-500 rounded-lg mt-5 border-t-gray-500 border-t-4">

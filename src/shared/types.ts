@@ -36,14 +36,8 @@ export type HotelType = {
     description: string
     status: boolean
     categories: string
-    adultCount: number
-    childCount: number
-    facilities: string[]
-    pricePerNight: number
     starRating: number
     imageUrls: string[]
-    lastUpdate: Date
-    pagination: number
 }
 
 export type RoomType = {
@@ -53,9 +47,13 @@ export type RoomType = {
     status: boolean
     adultCount: number
     childCount: number
+    bookedTime: number
+    bookedLatest: Date | null
     facilities: string[]
     pricePerNight: number
     imageUrls: string[]
+    discountRate: number
+    finalPrice: number
 }
 
 export type HotelSearchResponse = {
@@ -68,16 +66,17 @@ export type HotelSearchResponse = {
 }
 
 export type SearchParams = {
-    destination?: string
-    checkIn?: string
-    checkOut?: string
+    hotelName?: string
+    city?: string
+    country?: string
+    maxStarRating?: string[]
+    maxPrice?: string
     adultCount?: string
     childCount?: string
-    page?: string
-    facilities?: string[]
     categories?: string[]
-    stars?: string[]
-    maxPrice?: string
+    facilities?: string[]
+    page?: string
+    limit?: string
     sortOption?: string
 }
 
@@ -131,3 +130,20 @@ export type BookingDetailType = {
     bookingId: string
 }
 
+export type PromotionType = {
+    _id: string
+    name: string
+    discountPercentage: number
+    startDate: Date
+    endDate: Date
+    imageUrl: string
+    status: boolean
+}
+
+export type CommentType = {
+    hotelId: string
+    userId: string
+    content: string
+    createdAt: Date
+    status: boolean
+}

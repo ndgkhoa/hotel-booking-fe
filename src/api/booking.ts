@@ -5,6 +5,8 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
 export const createRoomBooking = async (formData: BookingFormType, roomId: string,) => {
     const token = localStorage.getItem('token');
+    console.log(formData);
+    
     const response = await fetch(`${API_BASE_URL}/api/bookings/${roomId}`, {
         credentials: 'include',
         method: 'POST',
@@ -19,7 +21,9 @@ export const createRoomBooking = async (formData: BookingFormType, roomId: strin
         throw new Error(errorData.message);
     }
     const booking = await response.json();
-        return booking;
+    const res = booking.data
+        return res;
+        
 }
 
 export const fetchMyBooking = async (): Promise<BookingType[]> => {

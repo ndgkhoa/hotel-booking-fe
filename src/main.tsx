@@ -14,13 +14,14 @@ const queryClient = new QueryClient({
         },
     },
 })
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
         <QueryClientProvider client={queryClient}>
             <AppContextProvider>
                 <SearchContextProvider>
-                    <GuestInfoContextProvider> 
-                        <App />
+                    <GuestInfoContextProvider>
+                            <App />
                     </GuestInfoContextProvider>
                 </SearchContextProvider>
             </AppContextProvider>
