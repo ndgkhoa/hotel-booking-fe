@@ -21,8 +21,6 @@ const GuestInfoForm = ({ pricePerNight }: Props) => {
     const { isLoggedIn } = useAppContext()
     const { guestInfo, setGuestInfo } = useGuestInfoContext()
 
-
-
     const {
         watch,
         register,
@@ -52,16 +50,16 @@ const GuestInfoForm = ({ pricePerNight }: Props) => {
             setGuestInfo({ email: data.email, phone: data.phone })
         }
 
-
         search.saveSearchValues('', data.checkIn, data.checkOut, data.adultCount, data.childCount)
         const bookingData: BookingFormType = {
             checkIn: data.checkIn,
             checkOut: data.checkOut,
             adultCount: data.adultCount,
-            childCount: data.childCount
+            childCount: data.childCount,
         }
         try {
             createRoomBooking(bookingData, roomId as string)
+            console.log('Booking data:', bookingData)
             toast.success('Booking created successfully!')
             navigate(`/my-bookings`)
         } catch (error) {
@@ -81,39 +79,9 @@ const GuestInfoForm = ({ pricePerNight }: Props) => {
                         type="text"
                         id="pricePerNight"
                         className="text-md font-bold p-2 w-full cursor-default bg-gray-200"
-                        value={`Price per night: $${pricePerNight}`}
+                        value={`Price: $${pricePerNight} per night`}
                         readOnly
                     />
-                    <div>
-                        <p className='font-bold'>From</p>
-                        <DatePicker
-                            selected={checkIn}
-                            onChange={(date) => setValue('checkIn', date as Date)}
-                            selectsStart
-                            startDate={checkIn}
-                            endDate={checkOut}
-                            minDate={minDate}
-                            maxDate={maxDate}
-                            placeholderText="Check-in Date"
-                            className="min-w-full bg-white p-2 focus:outline-none"
-                            wrapperClassName="min-w-full"
-                        />
-                    </div>
-                    <div>
-                        <p className='font-bold'>To</p>
-                        <DatePicker
-                            selected={checkOut}
-                            onChange={(date) => setValue('checkOut', date as Date)}
-                            selectsStart
-                            startDate={checkIn}
-                            endDate={checkOut}
-                            minDate={minDate}
-                            maxDate={maxDate}
-                            placeholderText="Check-out Date"
-                            className="min-w-full bg-white p-2 focus:outline-none"
-                            wrapperClassName="min-w-full"
-                        />
-                    </div>
                     <div className="flex bg-white px-2 py-1 gap-2">
                         <label className="flex items-center flex-1">
                             Adults:
@@ -148,6 +116,37 @@ const GuestInfoForm = ({ pricePerNight }: Props) => {
                             <span className="text-red-500 font-semibold text-sm">{errors.adultCount.message}</span>
                         )}
                     </div>
+                    <div>
+                        <p className="font-bold">From</p>
+                        <DatePicker
+                            selected={checkIn}
+                            onChange={(date) => setValue('checkIn', date as Date)}
+                            selectsStart
+                            startDate={checkIn}
+                            endDate={checkOut}
+                            minDate={minDate}
+                            maxDate={maxDate}
+                            placeholderText="Check-in Date"
+                            className="min-w-full bg-white p-2 focus:outline-none"
+                            wrapperClassName="min-w-full"
+                        />
+                    </div>
+                    <div>
+                        <p className="font-bold">To</p>
+                        <DatePicker
+                            selected={checkOut}
+                            onChange={(date) => setValue('checkOut', date as Date)}
+                            selectsStart
+                            startDate={checkIn}
+                            endDate={checkOut}
+                            minDate={minDate}
+                            maxDate={maxDate}
+                            placeholderText="Check-out Date"
+                            className="min-w-full bg-white p-2 focus:outline-none"
+                            wrapperClassName="min-w-full"
+                        />
+                    </div>
+
                     {!isLoggedIn && (
                         <>
                             <div className="flex bg-white px-2 py-1 gap-2">

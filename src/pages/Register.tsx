@@ -55,7 +55,7 @@ const Register = () => {
 
     return (
         <div
-            className="flex items-center justify-center min-h-screen bg-gradient-to-r from-sky-300 to-sky-200"
+            className="flex items-center justify-center min-h-screen bg-sky-300"
         >
             <div className="flex items-center justify-center w-full opacity-90">
                 <form

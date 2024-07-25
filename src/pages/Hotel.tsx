@@ -33,28 +33,11 @@ const Hotel = () => {
             hotels = hotels.filter((hotel) => selectedHotelCategories.includes(hotel.categories))
         }
 
-        if (selectedFacilities.length > 0) {
-            hotels = hotels.filter((hotel) =>
-                selectedFacilities.every((facility) => hotel.facilities.includes(facility))
-            )
-        }
-
-        if (selectedPrice !== undefined) {
-            hotels = hotels.filter((hotel) => hotel.pricePerNight <= selectedPrice)
-        }
-
-        if (sortOption === 'starRating') {
-            hotels = hotels.sort((a, b) => b.starRating - a.starRating)
-        } else if (sortOption === 'pricePerNightAsc') {
-            hotels = hotels.sort((a, b) => a.pricePerNight - b.pricePerNight)
-        } else if (sortOption === 'pricePerNightDesc') {
-            hotels = hotels.sort((a, b) => b.pricePerNight - a.pricePerNight)
-        }
 
         return hotels
-    }, [hotelData, selectedStars, selectedHotelCategories, selectedFacilities, selectedPrice, sortOption])
+    }, [hotelData, selectedStars, selectedHotelCategories])
 
-    const hotelsPerPage = 3
+    const hotelsPerPage = 4
     const paginatedHotels = useMemo(() => {
         const startIndex = (page - 1) * hotelsPerPage
         const endIndex = startIndex + hotelsPerPage

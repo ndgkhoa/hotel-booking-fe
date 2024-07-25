@@ -49,26 +49,37 @@ export const updateMyHotelById = async (hotelFormData: FormData) => {
 }
 
 export const searchHotel = async (searchParams: SearchParams): Promise<HotelSearchResponse> => {
-    const queryParams = new URLSearchParams()
-    queryParams.append('destination', searchParams.destination || '')
-    queryParams.append('checkIn', searchParams.checkIn || '')
-    queryParams.append('checkOut', searchParams.checkOut || '')
-    queryParams.append('adultCount', searchParams.adultCount || '')
-    queryParams.append('childCount', searchParams.childCount || '')
-    queryParams.append('page', searchParams.page || '')
-    queryParams.append('maxPrice', searchParams.maxPrice || '')
-    queryParams.append('sortOption', searchParams.sortOption || '')
-    searchParams.facilities?.forEach((facility) => queryParams.append('facilities', facility))
-    searchParams.categories?.forEach((cate) => queryParams.append('categories', cate))
-    searchParams.stars?.forEach((star) => queryParams.append('stars', star))
-    const response = await fetch(`${API_BASE_URL}/api/hotels/search?${queryParams}`)
+    const queryParams = new URLSearchParams();
+    queryParams.append('city', searchParams.city || '');
+    queryParams.append('country', searchParams.country || '');
+    queryParams.append('hotelName', searchParams.hotelName || '');
+    queryParams.append('limit', searchParams.limit?.toString() || '');
+    queryParams.append('adultCount', searchParams.adultCount?.toString() || '');
+    queryParams.append('childCount', searchParams.childCount?.toString() || '');
+    queryParams.append('page', searchParams.page?.toString() || '');
+    
+    if (searchParams.facilities) {
+        searchParams.facilities.forEach(facility => queryParams.append('facilities', facility));
+    }
+    
+    if (searchParams.categories) {
+        searchParams.categories.forEach(category => queryParams.append('categories', category));
+    }
+    
+    if (Array.isArray(searchParams.maxStarRating)) {
+        searchParams.maxStarRating.forEach(star => queryParams.append('maxStarRating', star));
+    }
 
-    if (!response.ok) throw new Error('Error fetching hotels')
-    // const data = await response.json()
-    // const res = data.data
-    // return res
-    return response.json()
+    if (Array.isArray(searchParams.maxPrice)) {
+        searchParams.maxPrice.forEach(price => queryParams.append('maxPrice', price.toString()));
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/hotels/search?${queryParams}`);
+    
+    if (!response.ok) throw new Error('Error fetching hotels');
+    return response.json();
 }
+
 
 export const fetchHotelById = async (hotelId: string): Promise<HotelType> => {
     const response = await fetch(`${API_BASE_URL}/api/hotels/${hotelId}`)
@@ -78,3 +89,28 @@ export const fetchHotelById = async (hotelId: string): Promise<HotelType> => {
     const data = await response.json()
     return data.data
 }
+
+export const resetHotelStatus = async (hotelId: string) => {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/rooms/${hotelId}/reset-status`, {
+            method: 'PUT',
+            credentials: 'include',
+            headers: {
+                'Token': `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to reset hotel status');
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        if (error instanceof Error) {
+            throw new Error(`Failed to reset hotel status: ${error.message}`);
+        }
+        throw new Error('Failed to reset hotel status');
+    }
+};
